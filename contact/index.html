@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Contact</title>
+        <link rel="stylesheet" href="../styles.css" />
+    </head>
+    <body>
+        <h1>Neil Dandekar</h1>
+
+        <nav>
+            <a href="../index.html">Home</a> |
+            <a href="../projects/index.html">Projects</a> |
+            <a href="../resume/index.html">Resume</a> |
+            <a href="../contact/index.html">Contact</a>
+        </nav>
+
+        <h2>Contact</h2>
+
+        <form
+            action="mailto:nmdandekar@ucsd.edu"
+            method="POST"
+            enctype="text/plain"
+        >
+            <label for="email">Your Email: </label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="example@example.com"
+                required
+            /><br />
+
+            <label for="subject">Subject:</label>
+            <input
+                type="text"
+                id="subject"
+                name="subject"
+                value="Hello"
+            /><br />
+
+            <label for="body">Message:</label>
+            <textarea id="body" name="body">Your message here</textarea><br />
+
+            <button type="submit">Send</button>
+        </form>
+    </body>
+</html>
