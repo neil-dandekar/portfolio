@@ -4,31 +4,50 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Resume</title>
-        <link
-            rel="stylesheet"
-            href="https://neildandekar.me/dsc106-lab01//styles.css"
-        />
+        <link rel="stylesheet" href="/styles.css" />
     </head>
     <body>
         <h1>Neil Dandekar</h1>
 
         <nav>
-            <a href="https://neildandekar.me/dsc106-lab01/">Home</a>
+            <a href="..">Home</a>
             <a href="https://github.com/neil-dandekar" , target="_blank"
                 >GitHub</a
             >
-            <a href="https://neildandekar.me/dsc106-lab01/projects/"
-                >Projects</a
-            >
-            <a href="https://neildandekar.me/dsc106-lab01/resume/">Resume</a>
-            <a href="https://neildandekar.me/dsc106-lab01/contact/">Contact</a>
+            <a href="../projects">Projects</a>
+            <a href="../resume" class="current">Resume</a>
+            <a href="../contact">Contact</a>
         </nav>
 
         <h2>Resume</h2>
 
-        <h3>Education</h3>
-        <p>Random University</p>
-        <h3>Experience</h3>
-        <p>I'm unemployed</p>
+        <section class="resume-section">
+            <h2>Education</h2>
+            <p>
+                <strong>University of Example</strong>, Bachelor of Science in
+                Data Science
+            </p>
+        </section>
+
+        <section class="resume-section">
+            <h2>Work Experience</h2>
+            <p>
+                <strong>Software Engineering Intern</strong> - Example Company
+            </p>
+            <ul>
+                <li>Did something important that you should know about.</li>
+                <li>
+                    Did something else important that you should know about.
+                </li>
+            </ul>
+        </section>
+        <section class="resume-section">
+            <h2>Skills</h2>
+            <ul>
+                <li>Programming Languages: Python, JavaScript, HTML, CSS</li>
+                <li>Frameworks: React, Node.js</li>
+                <li>Tools: Git, Docker, VS Code</li>
+            </ul>
+        </section>
     </body>
 </html>
