@@ -1,4 +1,4 @@
-# DSC 106: Data Visualization Portfolio
+# DSC 106: Data Visualization (Portfolio)
 
 ## Neil Dandekar
 
