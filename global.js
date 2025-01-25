@@ -4,6 +4,21 @@ function $$(selector, context = document) {
     return Array.from(context.querySelectorAll(selector));
 }
 
+// Dynamically set base URL
+console.log("hostname: ", window.location.hostname);
+// Set base URL dynamically based on hostname
+if (
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost"
+) {
+    document.write('<base href="/">'); // Development environment
+} else {
+    document.write('<base href="/portfolio/">'); // Production environment
+}
+
+const baseElement = document.querySelector("base");
+console.log("Base URL:", baseElement.href);
+
 // Navigation menu automation
 let pages = [
     { url: "", title: "Home" },
