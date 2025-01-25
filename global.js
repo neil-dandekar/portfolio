@@ -5,16 +5,13 @@ function $$(selector, context = document) {
 }
 
 // Dynamically set base URL
-console.log("hostname: ", window.location.hostname);
+
 // Set base URL dynamically based on hostname
-if (
+const LOCAL =
     window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "localhost"
-) {
-    document.write('<base href="/">'); // Development environment
-} else {
-    document.write('<base href="/portfolio/">'); // Production environment
-}
+    window.location.hostname === "localhost";
+
+const BASE_URL = LOCAL ? "" : "/portfolio/";
 
 const baseElement = document.querySelector("base");
 console.log("Base URL:", baseElement.href);
@@ -33,7 +30,8 @@ const nav = document.createElement("nav");
 const ARE_WE_HOME = document.documentElement.classList.contains("home");
 
 for (let p of pages) {
-    let url = !ARE_WE_HOME && !p.url.startsWith("http") ? p.url : p.url;
+    // let url = !ARE_WE_HOME && !p.url.startsWith("http") ? p.url : p.url;
+    let url = BASE_URL + p.url;
     let a = document.createElement("a");
     a.href = url;
     a.textContent = p.title;
