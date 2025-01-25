@@ -3,10 +3,25 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Home</title>
+        <title>Neil Dandekar</title>
 
-        <base href="/dsc106/" />
+        <!-- Dynamically set base URL -->
+        <script>
+            // Set base URL dynamically based on hostname
+            if (
+                window.location.hostname === "127.0.0.1" ||
+                window.location.hostname === "localhost"
+            ) {
+                document.write('<base href="/">'); // Development environment
+            } else {
+                document.write('<base href="/dsc106/">'); // Production environment
+            }
+        </script>
 
+        <!-- Main Stylesheet -->
+        <link rel="stylesheet" href="../styles.css" />
+
+        <!-- Local Stylesheet -->
         <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
@@ -17,9 +32,9 @@
             <a href="https://github.com/neil-dandekar" , target="_blank"
                 >GitHub</a
             >
-            <a href="projects">Projects</a>
-            <a href="resume">Resume</a>
-            <a href="contact">Contact</a>
+            <a href="../projects">Projects</a>
+            <a href="../resume">Resume</a>
+            <a href="../contact">Contact</a>
         </nav>
 
         <h2>Home</h2>
