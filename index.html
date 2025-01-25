@@ -7,6 +7,7 @@
 
         <!-- Dynamically set base URL -->
         <script>
+            console.log("hostname: ", window.location.hostname);
             // Set base URL dynamically based on hostname
             if (
                 window.location.hostname === "127.0.0.1" ||
@@ -16,6 +17,9 @@
             } else {
                 document.write('<base href="/portfolio/">'); // Production environment
             }
+
+            const baseElement = document.querySelector("base");
+            console.log("Base URL:", baseElement.href);
         </script>
 
         <!-- Main Stylesheet -->
@@ -28,13 +32,13 @@
         <h1>Neil Dandekar</h1>
 
         <nav>
-            <a href=".." class="current">Home</a>
+            <a href="index.html" class="current">Home</a>
             <a href="https://github.com/neil-dandekar" , target="_blank"
                 >GitHub</a
             >
-            <a href="../projects">Projects</a>
-            <a href="../resume">Resume</a>
-            <a href="../contact">Contact</a>
+            <a href="/projects">Projects</a>
+            <a href="/resume">Resume</a>
+            <a href="/contact">Contact</a>
         </nav>
 
         <h2>Home</h2>

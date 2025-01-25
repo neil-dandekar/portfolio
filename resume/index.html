@@ -17,6 +17,9 @@
             } else {
                 document.write('<base href="/portfolio/">'); // Production environment
             }
+
+            const baseElement = document.querySelector("base");
+            console.log("Base URL:", baseElement.href);
         </script>
 
         <!-- Main Stylesheet -->
