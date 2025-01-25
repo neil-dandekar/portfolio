@@ -31,7 +31,8 @@ const ARE_WE_HOME = document.documentElement.classList.contains("home");
 
 for (let p of pages) {
     // let url = !ARE_WE_HOME && !p.url.startsWith("http") ? p.url : p.url;
-    let url = BASE_URL + p.url;
+    const GITHUB = p.title == "GitHub";
+    let url = GITHUB ? p.url : BASE_URL + p.url;
     let a = document.createElement("a");
     a.href = url;
     a.textContent = p.title;
