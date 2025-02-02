@@ -1,0 +1,74 @@
+[
+    {
+        "title": "Handwritten Digit Recognition with Neural Networks",
+        "year": "2024",
+        "image": "images/p01.webp",
+        "description": "Developed a convolutional neural network (CNN) to classify handwritten digits using the MNIST dataset, achieving high accuracy with minimal preprocessing."
+    },
+    {
+        "title": "Web Scraper for Stock Market Data Analysis",
+        "year": "2023",
+        "image": "images/p02.webp",
+        "description": "Built a Python-based web scraper to collect stock price data from financial websites, performing trend analysis and visualization using Pandas and Matplotlib."
+    },
+    {
+        "title": "Personal Portfolio Website",
+        "year": "2022",
+        "image": "images/p03.webp",
+        "description": "Designed and developed a personal portfolio website using HTML, CSS, and JavaScript to showcase projects and achievements."
+    },
+    {
+        "title": "Simple To-Do List App with React",
+        "year": "2021",
+        "image": "images/p04.webp",
+        "description": "Created a lightweight to-do list application using React and local storage, allowing users to add, edit, and delete tasks efficiently."
+    },
+    {
+        "title": "Chatbot for Basic Customer Support",
+        "year": "2020",
+        "image": "images/p05.webp",
+        "description": "Implemented a rule-based chatbot using Python and NLTK to provide automated responses for common customer queries."
+    },
+    {
+        "title": "Interactive Data Dashboard with Dash and Flask",
+        "year": "2019",
+        "image": "images/p06.webp",
+        "description": "Built an interactive dashboard using Dash and Flask to visualize real-time data trends from CSV files and APIs."
+    },
+    {
+        "title": "Weather App with OpenWeather API",
+        "year": "2023",
+        "image": "images/p07.webp",
+        "description": "Developed a simple weather app that fetches and displays real-time weather data using the OpenWeather API."
+    },
+    {
+        "title": "Basic Expense Tracker with SQLite",
+        "year": "2022",
+        "image": "images/p08.webp",
+        "description": "Created a desktop application in Python with Tkinter and SQLite to track personal expenses and generate monthly reports."
+    },
+    {
+        "title": "Snake Game with Pygame",
+        "year": "2021",
+        "image": "images/p09.webp",
+        "description": "Implemented the classic Snake game using Pygame, adding custom features like power-ups and increasing difficulty."
+    },
+    {
+        "title": "Basic Blogging Platform with Django",
+        "year": "2024",
+        "image": "images/p10.webp",
+        "description": "Developed a simple blogging platform using Django, allowing users to create, edit, and delete blog posts with authentication."
+    },
+    {
+        "title": "Movie Recommendation System with Pandas",
+        "year": "2023",
+        "image": "images/p11.webp",
+        "description": "Implemented a basic content-based recommendation system for movies using Pandas and cosine similarity."
+    },
+    {
+        "title": "E-commerce Product Price Tracker",
+        "year": "2022",
+        "image": "images/p12.webp",
+        "description": "Built a Python script to track and notify price changes for e-commerce products using BeautifulSoup and email alerts."
+    }
+]

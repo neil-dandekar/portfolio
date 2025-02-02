@@ -92,3 +92,80 @@ if (colorSchemeLabel) {
     colorSchemeLabel.style.fontSize = "80%";
     colorSchemeLabel.style.fontFamily = "inherit"; // Ensure consistency with page fonts
 }
+
+export async function fetchJSON(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data: ${response.statusText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching JSON data:", error);
+        return [];
+    }
+}
+
+export function renderProjects(
+    projects,
+    containerElement,
+    headingLevel = "h2"
+) {
+    if (!containerElement) {
+        console.error("Invalid container element provided");
+        return;
+    }
+
+    containerElement.innerHTML = ""; // Clear existing content
+
+    projects.forEach((project) => {
+        const article = document.createElement("article");
+        article.innerHTML = `
+            <${headingLevel}>${project.title}</${headingLevel}>
+            <img src="${project.image}" alt="${project.title}">
+            <p>${project.description}</p>
+        `;
+        containerElement.appendChild(article);
+    });
+
+    // Display count of projects
+    const projectsTitle = document.querySelector(".projects-title");
+    if (projectsTitle) {
+        projectsTitle.textContent = `Projects (${projects.length})`;
+    }
+}
+
+export async function fetchGitHubData(username) {
+    try {
+        const response = await fetch(
+            `https://api.github.com/users/${username}`
+        );
+        if (!response.ok) {
+            throw new Error(
+                `Failed to fetch GitHub data: ${response.statusText}`
+            );
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching GitHub data:", error);
+        return null;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const profileStats = document.querySelector("#profile-stats");
+    if (profileStats) {
+        const githubData = await fetchGitHubData("neil-dandekar"); // Replace with actual username
+        if (githubData) {
+            profileStats.innerHTML = `
+                <h3>GitHub Profile Stats</h3>
+                <dl>
+                    <dt>Public Repos: ${githubData.public_repos}</dt>
+                    <dt>Public Gists: ${githubData.public_gists}</dt>
+                    <dt>Followers: ${githubData.followers}</dt>
+                    <dt>Following: ${githubData.following}</dt>
+                </dl>
+            `;
+        }
+    }
+});
