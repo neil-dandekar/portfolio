@@ -1,17 +1,5 @@
 import { fetchJSON, renderProjects } from "./global.js";
 
-try {
-    import("./global.js")
-        .then((module) => {
-            console.log("global.js found and imported successfully:", module);
-        })
-        .catch((error) => {
-            console.error("Error importing global.js:", error);
-        });
-} catch (error) {
-    console.error("Failed to import global.js:", error);
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
     const projectsContainer = document.querySelector(".projects");
     if (projectsContainer) {

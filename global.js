@@ -123,16 +123,13 @@ export function renderProjects(
         article.innerHTML = `
             <${headingLevel}>${project.title}</${headingLevel}>
             <img src="${project.image}" alt="${project.title}">
-            <p>${project.description}</p>
+            <div class="project-details">
+                <p>${project.description}</p>
+                <p class="project-year">Year: ${project.year}</p>
+            </div>
         `;
         containerElement.appendChild(article);
     });
-
-    // Display count of projects
-    const projectsTitle = document.querySelector(".projects-title");
-    if (projectsTitle) {
-        projectsTitle.textContent = `Projects (${projects.length})`;
-    }
 }
 
 export async function fetchGitHubData(username) {

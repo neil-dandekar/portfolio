@@ -21,3 +21,147 @@
     margin: 0.5em 0;
     font-size: 1.2em;
 }
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2em;
+    max-width: 600px;
+    margin: auto;
+}
+
+#projects-plot {
+    max-width: 20em;
+    margin-block: 2em;
+
+    overflow: visible;
+}
+
+.legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
+    gap: 1.2em;
+    padding: 1em;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    list-style: none;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.swatch {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: var(--color);
+    border-radius: 50%;
+    border: 1px solid #666;
+}
+
+#projects-plot path {
+    cursor: pointer;
+    transition: opacity 300ms, fill 300ms;
+}
+
+#projects-plot:has(path:hover) path:not(:hover) {
+    opacity: 0.5;
+}
+
+.selected {
+    --color: oklch(60% 45% 0) !important;
+}
+
+.selected path {
+    fill: var(--color);
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 1em;
+    list-style: none;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 200ms;
+}
+
+.legend-item:hover {
+    transform: scale(1.05);
+}
+
+.legend-item.selected {
+    font-weight: bold;
+    color: var(--color);
+}
+
+.swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--color);
+}
+
+.searchBar {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    background-color: #f9f9f9;
+}
+
+.searchBar::placeholder {
+    color: #888;
+}
+
+.searchBar:focus {
+    border-color: #007bff;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.searchBar:hover {
+    border-color: #bbb;
+}
+
+.searchBar {
+    width: 100%;
+    max-width: 800px; /* Adjust if needed */
+    display: block;
+    margin: 20px auto; /* Adds space above and below */
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    background-color: #f9f9f9;
+}
+
+.searchBar::placeholder {
+    color: #888;
+}
+
+.searchBar:focus {
+    border-color: #007bff;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+.searchBar:hover {
+    border-color: #bbb;
+}
