@@ -34,33 +34,7 @@
 #projects-plot {
     max-width: 20em;
     margin-block: 2em;
-
     overflow: visible;
-}
-
-.legend {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
-    gap: 1.2em;
-    padding: 1em;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    list-style: none;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-}
-
-.swatch {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    background-color: var(--color);
-    border-radius: 50%;
-    border: 1px solid #666;
 }
 
 #projects-plot path {
@@ -86,6 +60,8 @@
     gap: 10px;
     padding: 1em;
     list-style: none;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 .legend-item {
@@ -110,33 +86,7 @@
     height: 10px;
     border-radius: 50%;
     background-color: var(--color);
-}
-
-.searchBar {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 2px solid #ddd;
-    border-radius: 25px;
-    color: black;
-    outline: none;
-    transition: all 0.3s ease-in-out;
-    background-color: #f9f9f9;
-}
-
-.searchBar::placeholder {
-    color: #888;
-}
-
-.searchBar:focus {
-    border-color: #007bff;
-    background-color: #fff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
-}
-
-.searchBar:hover {
-    border-color: #bbb;
+    border: 1px solid #666;
 }
 
 .searchBar {
@@ -148,10 +98,11 @@
     font-size: 16px;
     border: 2px solid #ddd;
     border-radius: 25px;
-    color: black;
+    color: black !important; /* Ensures text remains black */
+    background-color: #f9f9f9;
     outline: none;
     transition: all 0.3s ease-in-out;
-    background-color: #f9f9f9;
+    appearance: none; /* Prevents system appearance overrides */
 }
 
 .searchBar::placeholder {
@@ -162,6 +113,7 @@
     border-color: #007bff;
     background-color: #fff;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    color: black !important; /* Ensures text stays black on focus */
 }
 
 .searchBar:hover {
