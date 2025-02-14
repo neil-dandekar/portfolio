@@ -19,9 +19,10 @@ console.log("Base URL:", baseElement.href);
 // Navigation menu automation
 let pages = [
     { url: "", title: "Home" },
-    { url: "https://github.com/neil-dandekar", title: "GitHub" },
     { url: "projects/", title: "Projects" },
     { url: "resume/", title: "Resume" },
+    { url: "https://github.com/neil-dandekar", title: "GitHub" },
+    { url: "meta/", title: "Meta" },
     { url: "contact/", title: "Contact" },
 ];
 
