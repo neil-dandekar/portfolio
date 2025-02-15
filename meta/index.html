@@ -31,9 +31,23 @@
     <body>
         <h1>Neil Dandekar</h1>
 
-        <h2>Meta</h2>
-        
-        </form>
+        <!-- <h2>Meta</h2> -->
+
+        <div id="stats-card">
+            <h2>Summary</h2>
+            <div class="stats-container">
+                <div id="stats-labels" class="stats-labels"></div>
+                <div id="stats-values" class="stats-values"></div>
+            </div>
+        </div>
+
+        <!-- import d3.js and main.js -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script type="module" src="meta/main.js"></script>
+
+        <!-- adds navbar and other -->
         <script type="module" src="global.js"></script>
-    </body>
+    <h2>Commits by time of day</h2>
+<div id="chart"></div>
+</body>
 </html>
