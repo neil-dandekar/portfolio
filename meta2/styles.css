@@ -1,5 +1,5 @@
 #stats-card {
-    background: white;
+    /* background: white; */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 20px;
@@ -32,16 +32,15 @@
 .stat-label {
     font-size: 12px;
     font-weight: bold;
-    color: #666;
+    /* color: #666; */
     text-transform: uppercase;
 }
 
 .stat-value {
     font-size: 24px;
     font-weight: bold;
-    color: #222;
+    /* color: #222; */
 }
-
 
 .gridlines line {
     stroke: lightgray;
