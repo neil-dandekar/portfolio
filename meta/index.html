@@ -8,16 +8,14 @@
         <!-- Dynamically set base URL -->
         <script>
             console.log("hostname: ", window.location.hostname);
-            // Set base URL dynamically based on hostname
             if (
                 window.location.hostname === "127.0.0.1" ||
                 window.location.hostname === "localhost"
             ) {
-                document.write('<base href="/">'); // Development environment
+                document.write('<base href="/">');
             } else {
-                document.write('<base href="/portfolio/">'); // Production environment
+                document.write('<base href="/portfolio/">');
             }
-
             const baseElement = document.querySelector("base");
             console.log("Base URL:", baseElement.href);
         </script>
@@ -27,13 +25,60 @@
 
         <!-- Local Stylesheet -->
         <link rel="stylesheet" href="meta/styles.css" />
+
+        <!-- JS imports -->
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script type="module" src="global.js"></script>
+        <script type="module" src="meta/main.js"></script>
     </head>
     <body>
         <h1>Neil Dandekar</h1>
 
-        <h2>Meta</h2>
-        <p>description of page</p>
+        <h2>Summary</h2>
+        <div id="stats"></div>
 
-        <script type="module" src="global.js"></script>
+        <dl id="commit-tooltip" class="info tooltip">
+            <dt>Commit</dt>
+            <dd>
+                <a href="" id="commit-link" target="_blank"></a>
+            </dd>
+            <dt>Date</dt>
+            <dd id="commit-date"></dd>
+            <dt>Time</dt>
+            <dd id="commit-time"></dd>
+            <dt>Author</dt>
+            <dd id="commit-author"></dd>
+            <dt>Lines Edited</dt>
+            <dd id="commit-lines-edited"></dd>
+        </dl>
+
+        <!-- Commits Scrollytelling and Visualization -->
+        <h2>Commits by time of day</h2>
+        <div id="scrollytelling">
+            <div id="scroll-container">
+                <!-- Floating element to show current date near scrollbar -->
+                <div id="scroll-date"></div>
+                <div id="spacer"></div>
+                <div id="items-container"></div>
+            </div>
+            <div id="chart"></div>
+        </div>
+
+        <!-- File Sizes Scrollytelling -->
+        <h2>File Sizes Over Time</h2>
+        <div id="file-visualization-container">
+            <!-- Left column: Unit visualization for files -->
+            <div id="file-visualization">
+                <dl class="files"></dl>
+            </div>
+            <!-- Right column: Narrative scrollytelling for file sizes -->
+            <div id="file-scrollytelling">
+                <div id="file-scroll-container">
+                    <div id="file-spacer"></div>
+                    <div id="file-items-container"></div>
+                </div>
+            </div>
+        </div>
+        <dl id="language-breakdown" class="stats"></dl>
     </body>
 </html>
