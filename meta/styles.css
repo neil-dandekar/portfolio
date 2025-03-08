@@ -246,7 +246,7 @@ circle.selected {
 
 #file-visualization {
     padding: 10px;
-    background-color: #f9f9f9;
+    /* background-color: #f9f9f9; */
 }
 
 #file-scrollytelling {

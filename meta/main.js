@@ -1,6 +1,7 @@
 /*******************************************************
  * main.js
- * Both scrollys show all commits (no slicing).
+ * - First scrolly: shows all commits on the chart, reveals circles in real-time
+ * - Second scrolly: same approach for file sizes (plus extra spacer height).
  *******************************************************/
 
 // Global variables
@@ -11,15 +12,12 @@ let selectedCommits = [];
 const width = 1000;
 const height = 600;
 let xScale, yScale;
-let timeScale;
 
-// For pinned scrolly logic:
-const ITEM_HEIGHT = 100; // approximate height per commit item
-const FILE_ITEM_HEIGHT = 100; // same for the file scrolly
+const ITEM_HEIGHT = 100; // approximate height of each commit text block
 
-////////////////////////////////////////////////////
+//------------------------------------------------------
 // 1) LOAD & PROCESS DATA
-////////////////////////////////////////////////////
+//------------------------------------------------------
 
 async function loadData() {
     data = await d3.csv("meta/loc.csv", (row) => ({
@@ -31,11 +29,10 @@ async function loadData() {
         datetime: new Date(row.datetime),
     }));
     processCommits();
-    displayData(); // fill the #stats section
+    displayData(); // Show summary stats
 }
 
 function processCommits() {
-    // Group CSV rows by commit hash
     commits = d3
         .groups(data, (d) => d.commit)
         .map(([commit, lines]) => {
@@ -51,7 +48,7 @@ function processCommits() {
                 hourFrac: datetime.getHours() + datetime.getMinutes() / 60,
                 totalLines: lines.length,
             };
-            // Put the line array in a non-enumerable property
+            // Store lines in a non-enumerable property
             Object.defineProperty(commitObj, "lines", {
                 value: lines,
                 configurable: true,
@@ -60,8 +57,7 @@ function processCommits() {
             });
             return commitObj;
         });
-
-    // Sort commits chronologically
+    // Sort chronologically
     commits.sort((a, b) => a.datetime - b.datetime);
 }
 
@@ -69,7 +65,7 @@ function displayData() {
     d3.select("#stats").selectAll("*").remove();
     const dl = d3.select("#stats").append("dl").attr("class", "stats");
 
-    // Total lines of code across all commits
+    // Total lines of code
     const totalLOC = commits.reduce(
         (sum, commit) => sum + commit.totalLines,
         0
@@ -82,9 +78,7 @@ function displayData() {
     dl.append("dd").text(commits.length);
 
     // Total files
-    const allFiles = commits.flatMap((commit) =>
-        commit.lines.map((line) => line.file)
-    );
+    const allFiles = commits.flatMap((c) => c.lines.map((line) => line.file));
     const totalFiles = new Set(allFiles).size;
     dl.append("dt").text("Total Number of Files");
     dl.append("dd").text(totalFiles);
@@ -93,27 +87,25 @@ function displayData() {
     const workByPeriod = d3.rollups(
         commits,
         (v) => v.length,
-        (d) => new Date(d.datetime).toLocaleString("en", { dayPeriod: "short" })
+        (d) => d.datetime.toLocaleString("en", { dayPeriod: "short" })
     );
     const maxPeriod = d3.greatest(workByPeriod, (d) => d[1])?.[0];
     dl.append("dt").text("Time of Day");
     dl.append("dd").text(maxPeriod);
 
-    // Number of distinct days
-    const totalDays = d3.group(commits, (d) =>
-        new Date(d.datetime).toDateString()
-    ).size;
+    // Distinct days
+    const totalDays = d3.group(commits, (d) => d.datetime.toDateString()).size;
     dl.append("dt").text("Number of Days Worked");
     dl.append("dd").text(totalDays);
 }
 
-////////////////////////////////////////////////////
-// 2) MAIN SCATTERPLOT & TOOLTIP
-////////////////////////////////////////////////////
+//------------------------------------------------------
+// 2) SCATTERPLOT: DRAW ONCE WITH FULL TIMELINE
+//------------------------------------------------------
 
-function updateScatterPlot(visibleCommits) {
-    // Remove old chart
-    d3.select("svg").remove();
+function drawFullScatterPlot() {
+    // Remove any old SVG
+    d3.select("#chart").select("svg")?.remove();
 
     // Create new SVG
     const svg = d3
@@ -122,36 +114,27 @@ function updateScatterPlot(visibleCommits) {
         .attr("viewBox", `0 0 ${width} ${height}`)
         .style("overflow", "visible");
 
-    // X scale (time)
-    xScale = d3
-        .scaleTime()
-        .domain(d3.extent(visibleCommits, (d) => d.datetime))
-        .range([0, width])
-        .nice();
-
-    // Y scale (hourFrac -> 24)
+    // Scales for the full date range
+    const [minDate, maxDate] = d3.extent(commits, (d) => d.datetime);
+    xScale = d3.scaleTime().domain([minDate, maxDate]).range([0, width]).nice();
     yScale = d3.scaleLinear().domain([0, 24]).range([height, 0]);
 
     // Margins
     const margin = { top: 10, right: 10, bottom: 30, left: 20 };
-    const usableArea = {
-        top: margin.top,
-        right: width - margin.right,
-        bottom: height - margin.bottom,
-        left: margin.left,
-        width: width - margin.left - margin.right,
-        height: height - margin.top - margin.bottom,
-    };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+    const usableLeft = margin.left;
+    const usableTop = margin.top;
 
-    // Reset domain ranges
-    xScale.range([usableArea.left, usableArea.right]);
-    yScale.range([usableArea.bottom, usableArea.top]);
+    // Adjust the scale ranges to the usable area
+    xScale.range([usableLeft, usableLeft + chartWidth]);
+    yScale.range([usableTop + chartHeight, usableTop]);
 
     // Gridlines
     svg.append("g")
         .attr("class", "gridlines")
-        .attr("transform", `translate(${usableArea.left}, 0)`)
-        .call(d3.axisLeft(yScale).tickFormat("").tickSize(-usableArea.width));
+        .attr("transform", `translate(${usableLeft}, 0)`)
+        .call(d3.axisLeft(yScale).tickFormat("").tickSize(-chartWidth));
 
     // Axes
     const xAxis = d3.axisBottom(xScale);
@@ -160,27 +143,28 @@ function updateScatterPlot(visibleCommits) {
         .tickFormat((d) => String(d % 24).padStart(2, "0") + ":00");
 
     svg.append("g")
-        .attr("transform", `translate(0, ${usableArea.bottom})`)
+        .attr("transform", `translate(0, ${usableTop + chartHeight})`)
         .call(xAxis);
     svg.append("g")
-        .attr("transform", `translate(${usableArea.left}, 0)`)
+        .attr("transform", `translate(${usableLeft}, 0)`)
         .call(yAxis);
 
-    // Circles
+    // One circle per commit
     const dots = svg.append("g").attr("class", "dots");
-    const [minLines, maxLines] = d3.extent(visibleCommits, (d) => d.totalLines);
+    const [minLines, maxLines] = d3.extent(commits, (d) => d.totalLines);
     const rScale = d3
         .scaleLog()
         .domain([Math.max(1, minLines), maxLines])
         .range([3, 16]);
 
     dots.selectAll("circle")
-        .data(visibleCommits)
+        .data(commits)
         .join("circle")
         .attr("cx", (d) => xScale(d.datetime))
         .attr("cy", (d) => yScale(d.hourFrac))
-        .attr("r", 0)
-        .style("fill-opacity", 0.7)
+        .attr("r", (d) => rScale(d.totalLines))
+        // Start all hidden
+        .style("fill-opacity", 0)
         .on("mouseenter", (event, commit) => {
             d3.select(event.currentTarget).classed(
                 "selected",
@@ -198,15 +182,12 @@ function updateScatterPlot(visibleCommits) {
             );
             updateTooltipContent({});
             updateTooltipVisibility(false);
-        })
-        .transition()
-        .duration(500)
-        .attr("r", (d) => rScale(d.totalLines));
+        });
 
+    // Optional brush
     brushSelector(svg);
 }
 
-// Optional brush
 function brushSelector(svg) {
     svg.append("g")
         .attr("class", "brush")
@@ -216,26 +197,30 @@ function brushSelector(svg) {
 
 function brushed(evt) {
     const brushSelection = evt.selection;
-    selectedCommits = !brushSelection
-        ? []
-        : commits.filter((commit) => {
-              const [x0, y0] = brushSelection[0];
-              const [x1, y1] = brushSelection[1];
-              const x = xScale(commit.datetime);
-              const y = yScale(commit.hourFrac);
-              return x >= x0 && x <= x1 && y >= y0 && y <= y1;
-          });
+    if (!brushSelection) {
+        selectedCommits = [];
+    } else {
+        const [x0, y0] = brushSelection[0];
+        const [x1, y1] = brushSelection[1];
+        selectedCommits = commits.filter((commit, i) => {
+            const x = xScale(commit.datetime);
+            const y = yScale(commit.hourFrac);
+            return x >= x0 && x <= x1 && y >= y0 && y <= y1;
+        });
+    }
     updateSelection();
     updateSelectionCount();
     updateLanguageBreakdown();
 }
 
-function isCommitSelected(commit) {
-    return selectedCommits.includes(commit);
+function updateSelection() {
+    d3.selectAll(".dots circle").classed("selected", (d) =>
+        isCommitSelected(d)
+    );
 }
 
-function updateSelection() {
-    d3.selectAll("circle").classed("selected", (d) => isCommitSelected(d));
+function isCommitSelected(commit) {
+    return selectedCommits.includes(commit);
 }
 
 function updateSelectionCount() {
@@ -268,9 +253,20 @@ function updateLanguageBreakdown() {
     }
 }
 
-////////////////////////////////////////////////////
-// 3) TOOLTIP
-////////////////////////////////////////////////////
+//------------------------------------------------------
+// 3) SHOW/HIDE CIRCLES ON SCROLL
+//------------------------------------------------------
+
+function updateVisibleCommits(currentIndex) {
+    // Show circles up to currentIndex, hide the rest
+    d3.selectAll(".dots circle").style("fill-opacity", (d, i) =>
+        i <= currentIndex ? 0.7 : 0
+    );
+}
+
+//------------------------------------------------------
+// 4) TOOLTIP
+//------------------------------------------------------
 
 function updateTooltipContent(commit) {
     const link = document.getElementById("commit-link");
@@ -309,12 +305,11 @@ function updateTooltipPosition(event) {
     tooltip.style.top = `${event.clientY - tooltipHeight - offset}px`;
 }
 
-////////////////////////////////////////////////////
-// 4) FILE LIST (STATIC OVERVIEW)
-////////////////////////////////////////////////////
+//------------------------------------------------------
+// 5) OPTIONAL STATIC FILE OVERVIEW (NON-SCROLLY)
+//------------------------------------------------------
 
 function displayCommitFiles() {
-    // If you want an overall static display of all lines + files, do it here
     const lines = commits.flatMap((d) => d.lines);
     const fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
 
@@ -340,6 +335,7 @@ function displayCommitFiles() {
             (d) =>
                 `<code>${d.name}</code><small>${d.lines.length} lines</small>`
         );
+
     filesContainer
         .append("dd")
         .selectAll("div")
@@ -350,21 +346,13 @@ function displayCommitFiles() {
         .style("background", (d) => fileTypeColors(d.type));
 }
 
-////////////////////////////////////////////////////
-// 5) SECOND SCROLLY: FILE SIZES PER COMMIT
-////////////////////////////////////////////////////
+//------------------------------------------------------
+// 6) SECOND SCROLLY (FILE SIZES)
+//------------------------------------------------------
 
-/**
- * We’ll display all commits in the right scrolly (#file-items-container).
- * Each commit text will say how many lines/files existed up to that commit’s time.
- * The left column (#file-visualization) is pinned and updates whenever the user
- * scrolls to a new “active” commit.
- */
-
-// Helper to get all lines up to a certain Date
 function getFileDataFiltered(timeThreshold) {
-    const filtered = commits.filter((d) => d.datetime <= timeThreshold);
-    const lines = filtered.flatMap((d) => d.lines);
+    const filtered = commits.filter((c) => c.datetime <= timeThreshold);
+    const lines = filtered.flatMap((c) => c.lines);
     let files = d3
         .groups(lines, (d) => d.file)
         .map(([name, lines]) => ({
@@ -375,7 +363,6 @@ function getFileDataFiltered(timeThreshold) {
     return files;
 }
 
-// Re-render the pinned left column based on the "active" commit's datetime
 function updateFileVisualization(fileDataSlice) {
     const fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
 
@@ -393,6 +380,7 @@ function updateFileVisualization(fileDataSlice) {
             (d) =>
                 `<code>${d.name}</code><small>${d.lines.length} lines</small>`
         );
+
     filesContainer
         .append("dd")
         .selectAll("div")
@@ -403,7 +391,6 @@ function updateFileVisualization(fileDataSlice) {
         .style("background", (d) => fileTypeColors(d.type));
 }
 
-// Create one text item per commit in #file-items-container
 function renderAllFileCommits() {
     const container = d3.select("#file-items-container");
     container.selectAll("div.file-commit-item").remove();
@@ -416,13 +403,11 @@ function renderAllFileCommits() {
         .attr("class", "file-commit-item")
         .style("margin", "1em 0")
         .html((d) => {
-            // Compute lines + files up to this commit's datetime
             const filteredLines = commits
                 .filter((c) => c.datetime <= d.datetime)
                 .flatMap((c) => c.lines);
             const totalLines = filteredLines.length;
             const totalFiles = new Set(filteredLines.map((x) => x.file)).size;
-
             return `
         <p>
           At ${d.datetime.toLocaleString("en", {
@@ -436,43 +421,32 @@ function renderAllFileCommits() {
         });
 }
 
-////////////////////////////////////////////////////
-// 6) DOMContentLoaded (set everything up)
-////////////////////////////////////////////////////
+//------------------------------------------------------
+// 7) DOMContentLoaded
+//------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // --- Load data ---
     await loadData();
-
-    // --- Display overall stats (#stats) and scatterplot with all commits ---
+    // 1) Display stats and draw chart once
     displayData();
-    updateScatterPlot(commits);
+    drawFullScatterPlot();
 
-    // --- Optionally show an overall static “file list” (unrelated to scrolly) ---
+    // 2) Optional static file overview
     displayCommitFiles();
 
-    // A time scale if you need it
-    timeScale = d3
-        .scaleTime()
-        .domain([
-            d3.min(commits, (d) => d.datetime),
-            d3.max(commits, (d) => d.datetime),
-        ])
-        .range([0, 100]);
-
-    /*************************************************
-     * FIRST SCROLLY (Commits)
-     * #scroll-container pinned chart (#chart)
-     * #items-container scrolly text
-     *************************************************/
+    // -------------- FIRST SCROLLY (Commits) --------------
     const scrollContainer = d3.select("#scroll-container");
+    const scrollContainerEl = document.getElementById("scroll-container");
+    const containerHeight = scrollContainerEl.getBoundingClientRect().height;
+
     const itemsContainer = d3.select("#items-container");
     const spacer = d3.select("#spacer");
 
-    // Make enough spacer so we can scroll through all commits
-    spacer.style("height", `${commits.length * ITEM_HEIGHT}px`);
+    // Add extra "buffer" so the last commit can reach the top
+    const totalHeight = commits.length * ITEM_HEIGHT + containerHeight;
+    spacer.style("height", `${totalHeight}px`);
 
-    // Render one scrolly text item per commit
+    // Render text for each commit
     itemsContainer.selectAll("div.commit-item").remove();
     itemsContainer
         .selectAll("div.commit-item")
@@ -504,17 +478,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
         });
 
-    // Update chart based on which item is near the top
+    // On scroll, figure out currentIndex and reveal circles
     scrollContainer.on("scroll", () => {
         const scrollTop = Math.max(0, scrollContainer.property("scrollTop"));
         let currentIndex = Math.floor(scrollTop / ITEM_HEIGHT);
         currentIndex = Math.min(currentIndex, commits.length - 1);
 
-        // Show all commits up to the active one in the chart
-        const visibleSlice = commits.slice(0, currentIndex + 1);
-        updateScatterPlot(visibleSlice);
+        // Show circles up to currentIndex
+        updateVisibleCommits(currentIndex);
 
-        // Update date label
+        // Update the date label
         const currentCommit = commits[currentIndex];
         d3.select("#scroll-date").text(
             currentCommit.datetime.toLocaleString("en", {
@@ -524,28 +497,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
     });
 
-    /*************************************************
-     * SECOND SCROLLY (File Sizes)
-     * #file-scroll-container pinned left column (#file-visualization)
-     * #file-items-container scrolly text
-     *************************************************/
+    // Initially show the first commit
+    updateVisibleCommits(0);
+
+    // -------------- SECOND SCROLLY (File Sizes) --------------
     const file_scrollContainer = d3.select("#file-scroll-container");
+    const fileScrollContainerEl = document.getElementById(
+        "file-scroll-container"
+    );
+    const fileContainerHeight =
+        fileScrollContainerEl.getBoundingClientRect().height;
+
     const file_itemsContainer = d3.select("#file-items-container");
     const file_spacer = d3.select("#file-spacer");
 
-    // Enough space to scroll through all commits
-    file_spacer.style("height", `${commits.length * FILE_ITEM_HEIGHT}px`);
+    // Again, add container height to ensure last items can become active
+    const fileTotalHeight = commits.length * ITEM_HEIGHT + fileContainerHeight;
+    file_spacer.style("height", `${fileTotalHeight}px`);
 
-    // Create a text block for every commit
+    // Render text blocks for all commits
     renderAllFileCommits();
 
-    // On scroll, figure out the "active" commit and update pinned file list
+    // On scroll, figure out the active commit's time threshold
     file_scrollContainer.on("scroll", () => {
         const scrollTop = Math.max(
             0,
             file_scrollContainer.property("scrollTop")
         );
-        let currentIndex = Math.floor(scrollTop / FILE_ITEM_HEIGHT);
+        let currentIndex = Math.floor(scrollTop / ITEM_HEIGHT);
         currentIndex = Math.min(currentIndex, commits.length - 1);
 
         const thresholdTime = commits[currentIndex].datetime;
@@ -553,7 +532,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateFileVisualization(fileDataSlice);
     });
 
-    // Initialize pinned file list for the first commit
+    // Initialize pinned file list for the earliest commit
     const fileDataSlice = getFileDataFiltered(commits[0].datetime);
     updateFileVisualization(fileDataSlice);
 });
